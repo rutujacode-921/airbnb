@@ -5,6 +5,9 @@ const Listing=require("./models/listing.js");
 const path=require("path");
 const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");
+const wrapAsync=require("./utils/wrapAsync.js");
+const ExpressError=require("./utils/ExpressError.js");
+
 
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({extended: true}));
@@ -39,12 +42,14 @@ app.get("/listings",async (req,res) =>{
 app.get("/listings/new",async (req,res) =>{
     res.render("listings/new.ejs");
 });
-app.post("/listings",async (req,res)=> {
+
+app.post("/listings",wrapAsync(async (req,res,next)=> {
+    
     const {title,description,price,country,location}=req.body;
     await Listing.insertOne({title,description,price,country,location});
     res.redirect("/listings");
 
-});
+}));
 app.get("/listings/:id/edit",async(req,res) =>{
     let {id}=req.params;
     
@@ -53,8 +58,11 @@ app.get("/listings/:id/edit",async(req,res) =>{
 });
 app.put("/listings/:id",async(req,res) =>{
     let {id}=req.params;
-    console.log(req.body);
-    await Listing.findByIdAndUpdate(id, { ...req.body});
+    let {title,description,price,country,location,image}=req.body;
+    await Listing.findByIdAndUpdate(id, {title,description,price,country,location,image:{
+        filename:"listingimage",
+        url:image
+    } });
     res.redirect(`/listings/${id}`);
 });
 app.delete("/listings/:id" , async(req,res) =>{
@@ -68,15 +76,12 @@ app.get("/listings/:id",async (req,res) =>{
     res.render("listings/show.ejs",{listing});
 });
 
+app.all(/(.*)/ ,(req,res,next) =>{
+    next(new ExpressError(404,"Page not found!!"));
+})
+app.use((err,req,res,next)=>{
+    let {statusCode,message} = err;
+    res.status(statusCode).send(message);
+});
 
-// app.get("/testListing",async (req,res) =>{
-//     let samplelisting = new Listing({
-//         title: "woderfull home",
-//         description:"my first villa",
-//         price:12000000,
-//         location: "tokyoo",
-//         contry:"spain",
-//     });
-//     await samplelisting.save();
-//     res.send("sample added");
-// });
+

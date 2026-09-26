@@ -1,16 +1,17 @@
 <% layout("/layouts/boilerplate") %>
-<body>
+
     
     <div class="col-8 offset-2">
     <h3>Create new Listing</h3>
-    <form method="post" action="/listings">
+    <form method="post" action="/listings"   class="needs-validation" novalidate>
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" id="title" placeholder="enter title"  name="title" >
+        <input type="text" class="form-control" id="title" placeholder="enter title"  name="title" required >
+        <div class="invalid-feedback">Title looks good</div>
     </div>
     <div class="mb-3">
         <label for="description" class="form-label">Description</label>
-        <textarea type="text" class="form-control" id="description" placeholder="enter description"  name="description"></textarea>
+        <textarea type="text" class="form-control" id="description" placeholder="enter description"  name="description" required></textarea>
     </div>
 
     <div class="mb-3">
@@ -20,20 +21,23 @@
     <div class="row">
     <div class="col-md-4">
     <label for="price" class="form-label">Price</label>
-    <input type="number" class="form-control" id="price"  name="price">
+    
+    <input type="number" class="form-control" id="price"  name="price" required>
+
     </div>
     <div class="col-md-8">
         <label for="country" class="form-label">Country</label>
-        <input type="text" placeholder="enter country" class="form-control" id="country" name="country">
+        <input type="text" placeholder="enter country" class="form-control" id="country" name="country" required>
     </div>
     </div>
     <div class="mb-3">
         <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" id="location" placeholder="add location"  name="location">
+        <input type="text" class="form-control" id="location" placeholder="add location"  name="location" required>
     </div>
     <br>
 
     <a class="btn btn-dark" href="#" role="button">Add</a> 
+     <script src="/js/script.js"></script>
     </form>
     </div> 
-</body>
+   
