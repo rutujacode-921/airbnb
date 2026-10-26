@@ -7,6 +7,9 @@ const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");
 const wrapAsync=require("./utils/wrapAsync.js");
 const ExpressError=require("./utils/ExpressError.js");
+const {listingSchema} =require("./schema.js");
+const Review=require("./models/review.js");
+
 
 
 app.use(methodOverride("_method"));
@@ -39,24 +42,42 @@ app.get("/listings",async (req,res) =>{
     res.render("listings/index.ejs",{allListings});
 
 });
+const validateListing=(req,res,next)=>{
+    let {error}=listingSchema.validate(req.body);
+    if(error){
+        throw new ExpressError(404,error);
+    }else{
+        next();
+    }
+}
 app.get("/listings/new",async (req,res) =>{
-    res.render("listings/new.ejs");
+res.render("listings/new.ejs");
 });
 
-app.post("/listings",wrapAsync(async (req,res,next)=> {
-    
+app.post("/listings",validateListing,wrapAsync(async (req,res,next)=> {
+   
     const {title,description,price,country,location}=req.body;
     await Listing.insertOne({title,description,price,country,location});
     res.redirect("/listings");
 
 }));
-app.get("/listings/:id/edit",async(req,res) =>{
+app.post("/listings/:id/reviews", async(req,res) =>{
+    let listing = await Listing.findById(req.params.id);
+    let newReview= new Review(req.body.review);
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+    console.log("new review saved ");
+    res.redirect(`/listings/${listing._id}`);
+
+});
+app.get("/listings/:id/edit",validateListing,wrapAsync(async(req,res) =>{
     let {id}=req.params;
     
     const listing=await Listing.findById(id);
     res.render("listings/edit.ejs",{listing});
-});
-app.put("/listings/:id",async(req,res) =>{
+}));
+app.put("/listings/:id",validateListing,wrapAsync(async(req,res) =>{
     let {id}=req.params;
     let {title,description,price,country,location,image}=req.body;
     await Listing.findByIdAndUpdate(id, {title,description,price,country,location,image:{
@@ -64,17 +85,19 @@ app.put("/listings/:id",async(req,res) =>{
         url:image
     } });
     res.redirect(`/listings/${id}`);
-});
-app.delete("/listings/:id" , async(req,res) =>{
+}));
+app.delete("/listings/:id" , validateListing, wrapAsync(async(req,res) =>{
     const {id}=req.params;
     await Listing.findByIdAndDelete(id);
     res.redirect("/listings");
-});
-app.get("/listings/:id",async (req,res) =>{
+}));
+
+
+app.get("/listings/:id",validateListing,wrapAsync(async (req,res) =>{
     let {id}=req.params;
     const listing=await Listing.findById(id);
     res.render("listings/show.ejs",{listing});
-});
+}));
 
 app.all(/(.*)/ ,(req,res,next) =>{
     next(new ExpressError(404,"Page not found!!"));
@@ -84,5 +107,7 @@ app.use((err,req,res,next)=>{
     res.render("listings/error.ejs" , {statusCode,message});
 
 });
+//review
+
 
 

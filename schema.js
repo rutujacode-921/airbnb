@@ -8,4 +8,4 @@ module.exports.listingSchema =joi.object({
         location:joi.string().required(),
         country:joi.string().required(),
     }).required()
-});
+}); 
