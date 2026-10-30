@@ -7,7 +7,7 @@ const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");
 const wrapAsync=require("./utils/wrapAsync.js");
 const ExpressError=require("./utils/ExpressError.js");
-const {listingSchema} =require("./schema.js");
+const {listingSchema ,reviewSchema} =require("./schema.js");
 const Review=require("./models/review.js");
 
 
@@ -40,10 +40,17 @@ app.get("/", (req,res) =>{
 app.get("/listings",async (req,res) =>{
     const allListings=await Listing.find({});
     res.render("listings/index.ejs",{allListings});
-
 });
 const validateListing=(req,res,next)=>{
     let {error}=listingSchema.validate(req.body);
+    if(error){
+        throw new ExpressError(404,error);
+    }else{
+        next();
+    }
+};
+const validateReview=(req,res,next)=>{
+    let {error}=reviewSchema.validate(req.body);
     if(error){
         throw new ExpressError(404,error);
     }else{
@@ -61,7 +68,7 @@ app.post("/listings",validateListing,wrapAsync(async (req,res,next)=> {
     res.redirect("/listings");
 
 }));
-app.post("/listings/:id/reviews", async(req,res) =>{
+app.post("/listings/:id/reviews", validateReview,wrapAsync(async(req,res) =>{
     let listing = await Listing.findById(req.params.id);
     let newReview= new Review(req.body.review);
     listing.reviews.push(newReview);
@@ -70,7 +77,7 @@ app.post("/listings/:id/reviews", async(req,res) =>{
     console.log("new review saved ");
     res.redirect(`/listings/${listing._id}`);
 
-});
+}));
 app.get("/listings/:id/edit",validateListing,wrapAsync(async(req,res) =>{
     let {id}=req.params;
     
@@ -95,7 +102,7 @@ app.delete("/listings/:id" , validateListing, wrapAsync(async(req,res) =>{
 
 app.get("/listings/:id",validateListing,wrapAsync(async (req,res) =>{
     let {id}=req.params;
-    const listing=await Listing.findById(id);
+    const listing=await Listing.findById(id).populate("reviews");
     res.render("listings/show.ejs",{listing});
 }));
 

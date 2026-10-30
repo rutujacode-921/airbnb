@@ -1,11 +1,11 @@
 <% layout("/layouts/boilerplate") %>
     <div class="row">
         <div class="col-8 offset-2">
-            <h3>Details:</h3>
-        <div class="card">
+            <h3><%=listing.title %></h3>
+        <div class="card listing-card" >
         <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="wait....">
         <div class="card-body">
-            <p class="card-text"><%=listing.title %><br>
+            
             <%=listing.description %><br>
             <b>&#8377</b><%=listing.price %><br>
             <%=listing.location %><br>
@@ -17,7 +17,8 @@
                     <button class="btn btn-dark ">Delete</button>
                 </form>
             </div>
-            <div class="col-8 offset-3">
+            <hr>
+            <div class="col-8 ">
                 <h4>
                     Leave a review
                 </h4>
@@ -38,12 +39,22 @@
 
 
         </div>
-           
-
-
-
+        
 
         </div>
-   
+        <hr>
+        <h4><b>All Reviews</b></h4>
+        <div class="row">
+            <% for(review of listing.reviews) {%>
+                <div class=" card col-5 ms-2 mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Rutuja</h5>
+                        <p class="card-text"><%= review.comment%></p>
+                        <p class="card-text"><%= review.rating%> stars</p>
+                    </div>
+                </div>
+
+            <% } %>
+        </div>
         </div>
     </div>
