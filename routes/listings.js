@@ -6,36 +6,6 @@ const wrapAsync=require("../utils/wrapAsync.js");
 const {listingSchema ,reviewSchema} =require("../schema.js");
 const Review=require("../models/review.js");
 router.use(express.urlencoded({extended: true}));
-const session = require("express-session");
-const flash = require("connect-flash");
-const sessionOptions ={
-    secret : "mysupersecretcode",
-    resave : false,
-    saveUninitioalized:true,
-    cookie :{
-        expires :Date.now() + 7*24*60*60*1000,
-        maxAge :7*24*60*60*1000,
-        httpOnly : true,
-    },
-}
-router.use(session(sessionOptions));
-router.use(flash());
-
-router.use((req,res,next) => {
-    res.locals.success = req.flash("success");
-    next();
-})
-
-
-
-router.get("/",async (req,res) =>{
-    const allListings=await Listing.find({});
-    res.render("listings/index.ejs",{allListings});
-});
-
-router.get("/new",async (req,res) =>{
-res.render("listings/new.ejs");
-});
 
 const validateListing=(req,res,next)=>{
     let {error}=listingSchema.validate(req.body);
@@ -45,19 +15,38 @@ const validateListing=(req,res,next)=>{
         next();
     }
 };
-router.post("/newadded",validateListing,wrapAsync(async (req,res,next)=> {
-    const {title,description,price,country,location}=req.body.listing;
-    await Listing.create({title,description,price,country,location});
-    req,flash("success" , "New listing created");
+
+// INDEX ROUTE
+router.get("/",async (req,res) =>{
+    const allListings=await Listing.find({});
+    res.render("listings/index.ejs",{allListings});
+});
+
+// NEW FORM ROUTE
+router.get("/new",async (req,res) =>{
+    res.render("listings/new.ejs");
+});
+
+// CREATE ROUTE
+router.post("/newadded", validateListing, wrapAsync(async (req, res) => {
+    const newListing = new Listing(req.body.listing);
+    await newListing.save();
+    req.flash("success", "New Listing Created!");
     res.redirect("/listings");
 }));
 
-router.get("/:id/edit",validateListing,wrapAsync(async(req,res) =>{
+// EDIT FORM ROUTE
+router.get("/:id/edit",wrapAsync(async(req,res) =>{
     let {id}=req.params;
-    
     const listing=await Listing.findById(id);
+    if(!listing){
+        req.flash("error","Listing you requested does not exist!");
+        return res.redirect("/listings");
+    }
     res.render("listings/edit.ejs",{listing});
 }));
+
+// UPDATE ROUTE
 router.put("/:id",validateListing,wrapAsync(async(req,res) =>{
     let {id}=req.params;
     let {title,description,price,country,location,image}=req.body.listing;
@@ -65,17 +54,32 @@ router.put("/:id",validateListing,wrapAsync(async(req,res) =>{
         filename:"listingimage",
         url:image
     } });
+    req.flash("success","Listing Updated!");
     res.redirect(`/listings/${id}`);
 }));
-router.delete("/:id" , validateListing, wrapAsync(async(req,res) =>{
-    const {id}=req.params;
+
+// DELETE ROUTE
+router.delete("/:id", wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    const listing = await Listing.findById(id);
+    if(!listing){
+        req.flash("error","Listing you requested does not exist!");
+        return res.redirect("/listings");
+    }
     await Listing.findByIdAndDelete(id);
+    console.log("deleted");
+    req.flash("success", "Listing Deleted!");
     res.redirect("/listings");
 }));
 
-router.get("/:id",validateListing,wrapAsync(async (req,res) =>{
+// SHOW ROUTE
+router.get("/:id",wrapAsync(async (req,res) =>{
     let {id}=req.params;
     const listing=await Listing.findById(id).populate("reviews");
+    if(!listing){
+        req.flash("error","Listing you requested does not exist!");
+        return res.redirect("/listings");
+    }
     res.render("listings/show.ejs",{listing});
 }));
 

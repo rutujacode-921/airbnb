@@ -6,13 +6,16 @@
     <form method="post" action="/listings/newadded"   class="needs-validation" novalidate>
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" id="title" placeholder="enter title" 
+        <input type="text" class="form-control" id="title" placeholder="enter title please" 
          name="listing[title]" required >
-        <div class="invalid-feedback">Title needed</div>
+        <div class="invalid-feedback">Title needed </div>
     </div>
     <div class="mb-3">
         <label for="description" class="form-label">Description</label>
-    <textarea type="text" class="form-control" id="description" placeholder="enter description"  name="listing[description]" required></textarea>
+    <textarea type="text" class="form-control" id="description" placeholder="enter description"  
+    name="listing[description]" required></textarea>
+    <div class="invalid-feedback">description needed </div>
+
     </div>
 
     <div class="mb-3">
@@ -34,6 +37,8 @@
     <div class="mb-3">
         <label for="location" class="form-label">Location</label>
         <input type="text" class="form-control" id="location" placeholder="add location"  name="listing[location]" required>
+        <div class="invalid-feedback">please enter the location</div>
+
     </div>
     <br>
     <button class="btn btn-dark">Add</button>
