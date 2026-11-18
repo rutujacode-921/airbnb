@@ -55,6 +55,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req,res,next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
+    res.locals.currUser = req.user;
     next();
 });
 app.get("/demouser" , async(req,res) =>{
@@ -80,7 +81,7 @@ app.all(/(.*)/ ,(req,res,next) =>{
     next(new ExpressError(404,"Page not found!!"));
 })
 app.use((err,req,res,next)=>{
-    let {statusCode=500,message="something went wrong"} = err;
+    let {statusCode,message="something went wrong"} = err;
     res.render("listings/error.ejs" , {statusCode,message,listing: null});
 });
  
