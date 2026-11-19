@@ -14,13 +14,16 @@ const listingSchema = new Schema({
         filename:{
             type:String,
             default:"listingimage",
+
         },
 
         url:{
             type : String,
-            default:"https://www.dreamstime.com/photos-images/random-tree-picture.html ",
+            default:"https://www.dreamstime.com/photos-images/random-tree-picture ",
             set : (v) => v=== ""? "https://www.dreamstime.com/photos-images/random-tree-picture.html " : v,
         },
+        
+
         
     },
     price : {

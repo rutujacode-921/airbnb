@@ -28,11 +28,30 @@
                     Leave a review
                 </h4>
                 <form action="/listings/<%= listing._id%>/reviews"  method="post" novalidate class="needs-validation">
-                     <div class="mb-3 mt-3">
-                        <label for="rating" class="form-label">Rating</label >
+                     <!-- <div class="mb-3 mt-3">
                         <input type="range" min="1" max="5" id="rating" 
                         name="review[rating]" class="form-range">
+                    </div> -->
+                    <div class="mb-3 mt-3">
+                    <label for="rating" class="form-label">Rating</label >
+
+                    <fieldset class="starability-grow">
+
+                    <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                    <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                    <label for="first-rate1" title="Terrible">1 star</label>
+                    <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                    <label for="first-rate2" title="Not good">2 stars</label>
+                    <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                    <label for="first-rate3" title="Average">3 stars</label>
+                    <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                    <label for="first-rate4" title="Very good">4 stars</label>
+                    <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                    <label for="first-rate5" title="Amazing">5 stars</label>
+                    </fieldset>
+                    
                     </div>
+
                     <div class="mb-3 mt-3">
                         <label for="comment" class="form-label">Comment</label >
                         <textarea required cols="30" rows="6" id="comment" name="review[comment]" 
@@ -48,17 +67,21 @@
         <hr>
         <h4><b>All Reviews</b></h4>
         <div class="row">
-            <% for(review of listing.reviews) {%>
+            <% for(let review of listing.reviews) {%>
                 <div class=" card col-5 ms-2 mb-3">
                     <div class="card-body">
-                        <h5 class="card-title"><%=review.author.username %></h5>
+                        <h5 class="card-title"><%= review.author ? review.author.username : "Anonymous" %></h5>
+                        <p class="starability-result " data-rating="<%= review.rating%>"></p>
                         <p class="card-text"><%= review.comment%></p>
-                        <p class="card-text"><%= review.rating%> stars</p>
+                        
+                    
                     </div>
-                    <form action="/listings/<%=listing._id %>/reviews/<%= review._id %>?_method=delete" 
+                    <% if(currUser && review.author && currUser._id.equals(review.author._id)) { %>
+                    <form action="/listings/<%=listing._id %>/reviews/<%= review._id %>?_method=DELETE"
                         class="mb-2" method="post">
                         <button class="btn btn-dark btn-sm">Delete</button>
                     </form>
+                    <% } %>
                 </div>
             <% } %>
         </div>

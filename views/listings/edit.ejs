@@ -2,7 +2,8 @@
 
    <div class="col-8 offset-2">
     <h3>Edit here</h3>
-    <form method="post" action="/listings/<%= listing._id %>?_method=PUT" class="needs-validation" novalidate>
+    <form method="post" action="/listings/<%= listing._id %>?_method=PUT" 
+      class="needs-validation" novalidate enctype="multipart/form-data">
     <div class="mb-3">
         <label for="title" class="form-label" >Title</label>
         <input type="text" value="<%= listing.title %>" class="form-control" id="title" placeholder="enter title" 
@@ -21,9 +22,9 @@
     </div>
 
     <div class="mb-3">
-        <label for="img-url" class="form-label">URL</label>
-        <input type="text" value="<%= listing.image.url %>" class="form-control" id="img-url" 
-        placeholder="enter image url/link"  name="listing[image]" required>
+        <label for="img-url" class="form-label">New Image</label>
+        <input type="file" value="<%= listing.image.url %>" class="form-control" id="img-url" 
+          name="listing[image]" >
     </div>
     <div class="row">
     <div class="col-md-4">
