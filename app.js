@@ -16,6 +16,8 @@ const ReviewRouter=require("./routes/reviews.js");
 const UserRouter=require("./routes/user.js");
 
 const session = require("express-session");
+const { MongoStore } = require("connect-mongo");
+
 const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
@@ -27,23 +29,32 @@ async function main(){
     await mongoose.connect(DBurl);
 }
 
-main()
-    .then(() => {
-        console.log("connected to DB");
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+if (!DBurl) {
+    console.error("ATLASDB_URL is not set. Add it in your environment variables.");
+    process.exit(1);
+}
 app.set("view engine" ,"ejs");
 app.set("views" ,path.join(__dirname,"views"));
 app.engine("ejs" , ejsMate);  
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({extended: true}));
-app.use(express.static(path.join(__dirname,"/public")))
+app.use(express.static(path.join(__dirname,"/public")));
 
+const store=MongoStore.create({
+    mongoUrl:DBurl,
+    crypto:{
+        secret :process.env.SECRET,
 
+    },
+    touchAfter :24*3600,
+});
+
+store.on("error" , (err) =>{
+    console.log("error in mongo seesion store" , err );
+});
 const sessionOptions ={
-    secret : "mysupersecretcode",
+    store,
+    secret : process.env.SECRET,
     resave : false,
     saveUninitialized:true,
     cookie :{
@@ -52,6 +63,8 @@ const sessionOptions ={
         httpOnly : true,
     },
 }
+
+
 app.use(session(sessionOptions));
 app.use(flash());
 app.use(passport.initialize());
@@ -94,8 +107,18 @@ app.use((err,req,res,next)=>{
     res.render("listings/error.ejs" , {statusCode,message,listing: null});
 });
  
-app.listen(8080, () =>{
-    console.log("server started successfully on port 8080");
-});
+const port = process.env.PORT || 8080;
+
+main()
+    .then(() => {
+        console.log("connected to DB");
+        app.listen(port, () => {
+            console.log(`server started successfully on port ${port}`);
+        });
+    })
+    .catch((err) => {
+        console.error("Failed to connect to MongoDB:", err);
+        process.exit(1);
+    });
 
 
