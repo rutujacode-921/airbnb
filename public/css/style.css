@@ -93,3 +93,7 @@ body{
 .btns a{
     margin-right: 2rem;
 }
+#map { 
+    height: 400px; 
+    width: 100%;
+}

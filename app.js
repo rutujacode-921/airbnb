@@ -73,9 +73,9 @@ app.get("/demouser" , async(req,res) =>{
     res.send(demo);
 });
 
-app.get("/", (req,res) =>{
-   res.send("successfully working");
-});
+// app.get("/", (req,res) =>{
+//    res.send("successfully working");
+// });
 
 app.use("/listings" , ListingRouter);
 

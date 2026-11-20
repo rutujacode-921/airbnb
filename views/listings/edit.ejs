@@ -22,6 +22,16 @@
     </div>
 
     <div class="mb-3">
+      <label class="form-label d-block">Original Image</label>
+      <% if (originalUrl) { %>
+        <img src="<%= originalUrl %>" alt="Original listing image" class="img-thumbnail"
+          style="max-width: 250px; max-height: 200px; object-fit: cover;">
+      <% } else { %>
+        <p class="text-muted">No image</p>
+      <% } %>
+    </div>
+
+    <div class="mb-3">
         <label for="img-url" class="form-label">New Image</label>
         <input type="file" value="<%= listing.image.url %>" class="form-control" id="img-url" 
           name="listing[image]" >

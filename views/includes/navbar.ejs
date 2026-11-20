@@ -6,15 +6,15 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-link " href="/">Home</a>
-        <a class="nav-link" href="/listings">all Listings</a>
-        <a class="nav-link" href="/listings/new">add new listing</a>
+        <a class="nav-link" href="/listings">Explore</a>
       </div>
 
       <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/listings/new">Airbnb your home</a>
+
         <%if(!currUser) {%>
-        <a class="nav-link " href="/signup">Sign Up</a>
-        <a class="nav-link" href="/login">Login</a>
+        <a class="nav-link " href="/signup"><b>Sign Up</b></a>
+        <a class="nav-link" href="/login"><b>Login</b></a>
         <%} %>
         <%if(currUser) {%>
         <a class="nav-link" href="/logout">Logout</a>

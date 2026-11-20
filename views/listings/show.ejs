@@ -65,8 +65,12 @@
         </div>
         </div>
         <hr>
-        <h4><b>All Reviews</b></h4>
+
+        <% if(listing.reviews.length > 0) { %>
+
+       
         <div class="row">
+            <h4><b>All Reviews</b></h4>
             <% for(let review of listing.reviews) {%>
                 <div class=" card col-5 ms-2 mb-3">
                     <div class="card-body">
@@ -84,6 +88,24 @@
                     <% } %>
                 </div>
             <% } %>
+            
         </div>
+        <%}%>
+        </div>
+        <div class="col-8 offset-2 mb-3">
+            <h3>Where you'll be</h3>
+            <div id="map"></div>
+
         </div>
     </div>   
+    <script>
+        const mapToken = "<%= process.env.MAP_TOKEN %>";
+        const mapListing = <%- JSON.stringify({
+            title: listing.title,
+            location: listing.location,
+            country: listing.country,
+            coordinates: (listing.geometry && listing.geometry.coordinates && listing.geometry.coordinates.length === 2)
+                ? listing.geometry.coordinates : null
+        }).replace(/</g, "\\u003c") %>;
+    </script>
+    <script src="/js/map.js"></script>
