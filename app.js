@@ -21,9 +21,12 @@ const passport = require("passport");
 const localStrategy = require("passport-local");
 const User = require("./models/user.js");
 
+const DBurl = process.env.ATLASDB_URL;
+
 async function main(){
-    await mongoose.connect('mongodb://127.0.0.1:27017/wonderlust');
+    await mongoose.connect(DBurl);
 }
+
 main()
     .then(() => {
         console.log("connected to DB");
